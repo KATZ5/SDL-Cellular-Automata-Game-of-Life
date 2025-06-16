@@ -1,6 +1,5 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_events.h>
-#include <SDL3/SDL_keycode.h>
 #include <SDL3/SDL_stdinc.h>
 #include <SDL3/SDL_timer.h>
 #include <iostream>
@@ -10,7 +9,6 @@ bool kill = false;
 const float cellSize = 24.0;
 const int arraySize = window_w / cellSize;
 int gridArray[arraySize][arraySize];
-int newGridArray[arraySize][arraySize];
 
 void drawCells(SDL_Renderer *renderer) {
   for (float i = 0; i < window_w; i += cellSize) {
@@ -26,7 +24,6 @@ void fillGrid(int gridArray[arraySize][arraySize]) {
   for (int i = 0; i < arraySize; i++) {
     for (int j = 0; j < arraySize; j++) {
       gridArray[i][j] = 0;
-      newGridArray[i][j] = 0;
     }
   }
 }
@@ -50,31 +47,20 @@ void updateGridArray(int gridArray[arraySize][arraySize]) {
 }
 
 void sandRules(int gridArray[arraySize][arraySize]) {
-  for (int i = 0; i < arraySize; i++) {
+  for (int i = arraySize - 2; i >= 0; i--) {
     for (int j = 0; j < arraySize; j++) {
-      int neigbhourCount = (gridArray[i][j + 1] + gridArray[i][j - 1] +
-                            gridArray[i + 1][j] + gridArray[i - 1][j] +
-                            gridArray[i + 1][j + 1] + gridArray[i + 1][j - 1] +
-                            gridArray[i - 1][j - 1] + gridArray[i - 1][j + 1]);
-      if (gridArray[i][j] == 1) {
-        if (neigbhourCount < 2) {
-          newGridArray[i][j] = 0;
-        } else if (neigbhourCount == 2 || neigbhourCount == 3) {
-          newGridArray[i][j] = 1;
-        } else if (neigbhourCount > 3) {
-          newGridArray[i][j] = 0;
-        }
-      } else if (gridArray[i][j] == 0) {
-        if (neigbhourCount == 3) {
-          newGridArray[i][j] = 1;
-        }
+      if (gridArray[i][j] == 1 && gridArray[i + 1][j] == 0) {
+        gridArray[i + 1][j] = 1;
+        gridArray[i][j] = 0;
+      } else if (gridArray[i][j] == 1 && gridArray[i + 1][j - 1] == 0 &&
+                 j != 0) {
+        gridArray[i + 1][j - 1] = 1;
+        gridArray[i][j] = 0;
+      } else if (gridArray[i][j] == 1 && gridArray[i + 1][j + 1] == 0 &&
+                 j != (window_h / cellSize) - 1) {
+        gridArray[i + 1][j + 1] = 1;
+        gridArray[i][j] = 0;
       }
-    }
-  }
-
-  for (int i = 0; i < arraySize; i++) {
-    for (int j = 0; j < arraySize; j++) {
-      gridArray[i][j] = newGridArray[i][j];
     }
   }
 }
@@ -83,7 +69,7 @@ void fillCell(SDL_Renderer *renderer, int gridArray[arraySize][arraySize]) {
   for (int i = 0; i < arraySize; i++) {
     for (int j = 0; j < arraySize; j++) {
       if (gridArray[i][j] == 1) {
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 0);
+        SDL_SetRenderDrawColor(renderer, 194, 178, 128, 0);
         SDL_FRect cell = {j * cellSize, i * cellSize, cellSize, cellSize};
         SDL_RenderFillRect(renderer, &cell);
       }
@@ -150,21 +136,16 @@ int main() {
 
         updateGridArray(gridArray);
         printGridArray(gridArray);
-        play = false;
 
       case SDL_EVENT_KEY_DOWN:
-        if (event.key.key == SDLK_SPACE) {
-          play = true;
-
-          std::cout << "Keyboard presses" << std::endl;
-        }
+        play = true;
+        std::cout << "Keyboard presses" << std::endl;
       }
     }
     Uint32 currentUpdate = SDL_GetTicks();
     if (currentUpdate - lastUpdate > tickInterval) {
       if (play == true) {
-
-        sandRules(gridArray);
+        // sandRules(gridArray);
       }
       lastUpdate = currentUpdate;
     }
