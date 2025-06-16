@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(SDLFallingSand)
+project(SDLGameOfLife)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -18,11 +18,11 @@ add_subdirectory(external/SDL3)
 file(GLOB SOURCES "src/*.cpp")
 
 # Create executable
-add_executable(SDLFallingSand ${SOURCES})
+add_executable(SDLGameOfLife ${SOURCES})
 
 # Link SDL3
-target_link_libraries(SDLFallingSand SDL3-static)
+target_link_libraries(SDLGameOfLife SDL3-static)
 
 # Include SDL3 headers
-target_include_directories(SDLFallingSand PRIVATE external/SDL3/include)
+target_include_directories(SDLGameOfLife PRIVATE external/SDL3/include)
 
