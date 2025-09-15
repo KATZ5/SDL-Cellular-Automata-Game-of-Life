@@ -2,7 +2,7 @@
 
 Conwey's Game of life implemented in C++ usind SDL3
 
-<img src="./screenshorts/Screenshot1.png" width="644px">
+<img src="./screenshorts/output.gif" width="644px">
 
 ## CLONING
 
